@@ -1,4 +1,5 @@
 import random
+import math
 
 accounts = []
 
@@ -7,14 +8,16 @@ class Card:
     def __init__(self):
         self.iin = 400000
         self.account_number = random.randint(1, 999999999)
-        self.checksum = 0
         self.new_card_number()
-        self.pin_number = random.randint(0, 9999)
-        self.cardnumber = str(self.iin) + str(self.account_number) + str(self.checksum)
+        self.checksum = 0
+        self.pin_number = str(random.randint(0, 9999)).zfill(4)
+        self.cardnumber = str(self.iin) + str(self.account_number).zfill(9)
+        self.create_checksum()
+        self.cardnumber = str(self.iin) + str(self.account_number).zfill(9) + str(self.checksum)
         self.balance = 0
         accounts.append(
          {"cardnumber": self.cardnumber,
-             "pinnumber": str(self.pin_number).zfill(4),
+             "pinnumber": self.pin_number,
              "Balance": self.balance}
         )
 
@@ -22,6 +25,26 @@ class Card:
         while self.account_number in accounts:
             self.account_number = random.randint(1, 999999999)
             self.checksum = 0
+
+    def create_checksum(self):
+        transformed_number = []
+        digit_count = 1
+        checksum_value = 0
+        for digit in self.cardnumber:
+            int_digit = int(digit)
+            if digit_count % 2:
+                int_digit = int_digit * 2
+                if int_digit > 9:
+                    int_digit = int_digit - 9
+                    transformed_number.append(int_digit)
+                else:
+                    transformed_number.append(int_digit)
+            else:
+                transformed_number.append(int_digit)
+            checksum_value = checksum_value + int_digit
+            digit_count += 1
+        rounded = math.ceil(checksum_value / 10) * 10
+        self.checksum = rounded - checksum_value
 
 
 menu_running = True
