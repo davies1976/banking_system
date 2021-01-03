@@ -1,7 +1,37 @@
 import random
 import math
+import sqlite3
 
 accounts = []
+
+
+class BankingDatabase:
+    def __init__(self):
+        self.conn = sqlite3.connect('card.s3db')
+        self.cur = self.conn.cursor()
+        self.create_table()
+
+    def create_table(self):
+        sql_create_tasks_table = """CREATE TABLE IF NOT EXISTS card (
+                                           id integer PRIMARY KEY,
+                                           number text NOT NULL,
+                                           pin text NOT NULL, 
+                                           balance integer DEFAULT 0
+                                       );"""
+        self.cur.execute(sql_create_tasks_table)
+        self.conn.commit()
+
+    def write_card(self, card_number, pin_number, balance):
+        sqlite_insert_query = f"""INSERT INTO card
+                              (number, pin, balance) 
+                               VALUES 
+                              ({card_number},{pin_number},{balance})"""
+
+        self.cur.execute(sqlite_insert_query)
+        self.conn.commit()
+
+    def read_card(self):
+        pass
 
 
 class Card:
@@ -13,8 +43,11 @@ class Card:
         self.pin_number = str(random.randint(0, 9999)).zfill(4)
         self.cardnumber = str(self.iin) + str(self.account_number).zfill(9)
         self.create_checksum()
-        self.cardnumber = str(self.iin) + str(self.account_number).zfill(9) + str(self.checksum)
+        self.cardnumber += str(self.checksum)
         self.balance = 0
+        account_db = BankingDatabase()
+        account_db.create_table()
+        account_db.write_card(self.cardnumber, self.pin_number, self.balance)
         accounts.append(
          {"cardnumber": self.cardnumber,
              "pinnumber": self.pin_number,
