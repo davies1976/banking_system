@@ -21,11 +21,11 @@ class BankingDatabase:
         self.cur.execute(sql_create_tasks_table)
         self.conn.commit()
 
-    def write_card(self, card_number, pin_number, balance):
+    def write_card(self, number, pin, balance):
         sqlite_insert_query = f"""INSERT INTO card
                               (number, pin, balance) 
                                VALUES 
-                              ({card_number},{pin_number},{balance})"""
+                              ({number},{pin},{balance})"""
 
         self.cur.execute(sqlite_insert_query)
         self.conn.commit()
